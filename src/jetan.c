@@ -33,6 +33,7 @@ typedef struct {
 } Move;
 
 Board current;
+bool loss = false;
 
 void setup() {
 	for (int i = 0; i < 100; i++) {
@@ -80,7 +81,7 @@ void setup() {
 	current.black[98] = PADWAR;
 	current.black[99] = WARRIOR;
 	current.orangeToMove = true;
-	current.orangeEscaped = false;
+	current.orangeEscaped = true;
 	current.blackEscaped = false;
 }
 
@@ -195,10 +196,10 @@ void copyBoard(Board* dst, Board* src) {
 	dst->blackEscaped = src->blackEscaped;
 }
 
-bool isSpaceThreatened(Board* board, bool checkOrange, int x, int y) {
+bool isSpaceThreatened(Board* board, bool checkOrangeThreat, int spaceX, int spaceY) {
 	char* sideA = board->black;
 	char* sideB = board->orange;
-	if (checkOrange) {
+	if (checkOrangeThreat) {
 		sideA = board->orange;
 		sideB = board->black;
 	}
@@ -209,7 +210,7 @@ bool isSpaceThreatened(Board* board, bool checkOrange, int x, int y) {
 		for (int x = 0; x < 10; x++) {
 			switch (pieceAt(sideA, x, y)) {
 			case PANTHAN:
-				addPanthanMoves(&moves, board, checkOrange, x, y);
+				addPanthanMoves(&moves, sideA, checkOrangeThreat, x, y);
 				break;
 			case THOAT:
 				addThoatMoves(&moves, sideA, x, y);
@@ -234,7 +235,7 @@ bool isSpaceThreatened(Board* board, bool checkOrange, int x, int y) {
 				continue;
 			}
 			for (int i = startIndex; i < moves.size; i++) {
-				if (((Move*) moves.array[i])->endX == x && ((Move*) moves.array[i])->endY == y) {
+				if (((Move*) moves.array[i])->endX == spaceX && ((Move*) moves.array[i])->endY == spaceY) {
 					for (int j = 0; j < moves.size; j++) {
 						free(moves.array[j]);
 					}
@@ -253,34 +254,31 @@ bool isSpaceThreatened(Board* board, bool checkOrange, int x, int y) {
 }
 
 bool isPrincessInCheck(Board* board, bool checkOrange) {
-	char* sideA = board->black;
-	char* sideB = board->orange;
+	char* side = board->black;
 	if (checkOrange) {
-		sideA = board->orange;
-		sideB = board->black;
+		side = board->orange;
 	}
 	int princessX = 0;
 	int princessY = 0;
 	for (int i = 0; i < 100; i++) {
-		if (pieceAt(sideA, i % 10, i / 10)) {
+		if (pieceAt(side, i % 10, i / 10) == PRINCESS) {
 			princessX = i % 10;
 			princessY = i / 10;
 			break;
 		}
 	}
-	if (isSpaceThreatened(sideA, sideB, princessX, princessY)) {
+	if (isSpaceThreatened(board, !checkOrange, princessX, princessY)) {
 		return true;
 	}
 	return false;
 }
 
-void addPanthanMoves(Array* moves, Board* board, bool checkOrange, int x, int y) {
-	char* toMove = board->black;
-	if (checkOrange) {
-		toMove = board->orange;
-	}
+void addPanthanMoves(Array* moves, char* toMove, bool checkOrange, int x, int y) {
 	for (int yOffset = -1; yOffset <= 1; yOffset++) {
 		for (int xOffset = -1; xOffset <= 1; xOffset++) {
+			if (xOffset == 0 && yOffset == 0) {
+				continue;
+			}
 			if (checkOrange) {
 				if (xOffset == 0 && yOffset == -1) {
 					continue;
@@ -440,7 +438,7 @@ void addDiagonalMoves(Array* moves, char* toMove, char* opponent, int x, int y, 
 	int offset[] = {
 		 1,  1, 
 		-1,  1, 
-		 1,  1, 
+		-1, -1, 
 		 1, -1
 	};
 	int xOffset = 0;
@@ -513,7 +511,7 @@ void addPrincessMoves(Array* moves, Board* board, int x, int y) {
 		for (int j = 0; j < depth; j++) {
 			xOffset += offset[i * 2];
 			yOffset += offset[i * 2 + 1];
-			if (pieceAt(board->black, x + xOffset, y + yOffset) == EMPTY && pieceAt(board->orange, x + xOffset, y + yOffset) == EMPTY && !isSpaceThreatened(board, board->orangeToMove, x + xOffset, y + yOffset)) {
+			if (pieceAt(board->black, x + xOffset, y + yOffset) == EMPTY && pieceAt(board->orange, x + xOffset, y + yOffset) == EMPTY) {
 				Move* m = malloc(sizeof(Move));
 				m->startX = x;
 				m->startY = y;
@@ -536,7 +534,7 @@ void getMoves(Board* board, Array* moves) {
 		for (int x = 0; x < 10; x++) {
 			switch (pieceAt(toMove, x, y)) {
 			case PANTHAN:
-				addPanthanMoves(moves, board, board->orangeToMove, x, y);
+				addPanthanMoves(moves, toMove, board->orangeToMove, x, y);
 				break;
 			case THOAT:
 				addThoatMoves(moves, toMove, x, y);
@@ -569,7 +567,7 @@ void getMoves(Board* board, Array* moves) {
 		Move* m = (Move*) moves->array[i];
 		move(&b, m->startX, m->startY, m->endX, m->endY);
 		if (isPrincessInCheck(&b, board->orangeToMove)) {
-			free(m);
+			free(moves->array[i]);
 			moves->array[i] = NULL;
 		}
 	}
@@ -582,7 +580,7 @@ void move(Board* board, int startX, int startY, int endX, int endY) {
 		toMove = board->orange;
 		opponent = board->black;
 	}
-	if (pieceAt(board, startX, startY) == PRINCESS && (startX - endX > 3 || startY - endY > 3)) {
+	if (pieceAt(toMove, startX, startY) == PRINCESS && (startX - endX > 3 || startY - endY > 3)) {
 		if (board->orangeToMove) {
 			board->orangeEscaped = true;
 		} else {
@@ -596,7 +594,7 @@ void move(Board* board, int startX, int startY, int endX, int endY) {
 }
 
 bool checkLoss(Board* board) {
-	return false;
+	return loss;
 }
 
 int evaluate(Board* board) {
@@ -665,14 +663,16 @@ void makeMove(Board* board) {
 	int max = INT_MIN;
 	int moveIndex = 0;
 	Board* b = malloc(sizeof(Board));
+	bool noLegalMoves = true;
 	for (int i = 0; i < possibleMoves.size; i++) {
 		if (possibleMoves.array[i] == NULL) {
 			continue;
 		}
+		noLegalMoves = false;
 		copyBoard(b, board);
 		Move* m = (Move*) possibleMoves.array[i];
 		move(b, m->startX, m->startY, m->endX, m->endY);
-		int n = negaMax(b, INT_MIN, INT_MAX, 3);
+		int n = negaMax(b, INT_MIN, INT_MAX, 2);
 		if (n > max) {
 			max = n;
 			clearArray(&bestMoves);
@@ -683,9 +683,13 @@ void makeMove(Board* board) {
 	}
 	free(b);
 
-	// Make move
-	Move* m = (Move*) bestMoves.array[randi() % bestMoves.size];
-	move(board, m->startX, m->startY, m->endX, m->endY);
+	if (noLegalMoves) {
+		loss = true;
+	} else {
+		// Make move
+		Move* m = (Move*) bestMoves.array[randi() % bestMoves.size];
+		move(board, m->startX, m->startY, m->endX, m->endY);
+	}
 
 	// Free memory
 	for (int i = 0; i < possibleMoves.size; i++) {
