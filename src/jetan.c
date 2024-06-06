@@ -688,6 +688,15 @@ void makeMove(Board* board) {
 	} else {
 		// Make move
 		Move* m = (Move*) bestMoves.array[randi() % bestMoves.size];
+		char* toMove = board->black;
+		char* opponent = board->orange;
+		if (board->orangeToMove) {
+			toMove = board->orange;
+			opponent = board->black;
+		}
+		if (pieceAt(toMove, m->startX, m->startY) == CHIEF && pieceAt(opponent, m->endX, m->endY) == CHIEF) {
+			loss = true;
+		}
 		move(board, m->startX, m->startY, m->endX, m->endY);
 	}
 
