@@ -1,4 +1,4 @@
-OBJS = jetan.c array.c util.c
+OBJS = jetan.c logic.c moves.c board.c array.c util.c
 CC = gcc
 COMPILER_FLAGS = -w
 OBJ_NAME = ../bin/jetan

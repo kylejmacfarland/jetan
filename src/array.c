@@ -2,8 +2,9 @@
 
 #include <stddef.h>
 
-void initArray(Array* a, int startSize) {
-	a->array = malloc(startSize * sizeof(void*));
+void initArray(Array* a, unsigned int startSize, unsigned int eSize) {
+	a->elementSize = eSize;
+	a->array = malloc(startSize * a->elementSize);
 	a->size = 0;
 	a->maxSize = startSize;
 }
@@ -17,7 +18,7 @@ void addElement(Array* a, void* element) {
 	}
 	if (a->size > a->maxSize) {
 		a->maxSize *= 2;
-		a->array = realloc(a->array, a->maxSize * sizeof(void*));
+		a->array = realloc(a->array, a->maxSize * a->elementSize);
 	}
 	a->array[a->size++] = element;
 }

@@ -3,11 +3,12 @@
 
 typedef struct {
 	void** array;
-	int size;
-	int maxSize;
+	unsigned int elementSize;
+	unsigned int size;
+	unsigned int maxSize;
 } Array;
 
-void initArray(Array* a, int startSize);
+void initArray(Array* a, unsigned int startSize, unsigned int eSize);
 
 void addElement(Array* a, void* element);
 
