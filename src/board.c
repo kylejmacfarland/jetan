@@ -50,6 +50,7 @@ void setupBoard(Board* board) {
 	board->orangeToMove = true;
 	board->orangeEscaped = true;
 	board->blackEscaped = false;
+	return true;
 }
 
 unsigned char pieceAt(char* side, int x, int y) {
@@ -57,100 +58,6 @@ unsigned char pieceAt(char* side, int x, int y) {
 		return INVALID;
 	}
 	return side[y * 10 + x];
-}
-
-void displayBoard(Board* board) {
-	printf("=============================\n");
-	for (int y = 0; y < 10; y++) {
-		for (int x = 0; x < 10; x++) {
-			bool noPiece = false;
-			switch (pieceAt(board->orange, x, y)) {
-			case PANTHAN:
-				printf("\033[0;31m");
-				printf("PA ");
-				printf("\033[0m");
-				break;
-			case THOAT:
-				printf("\033[0;31m");
-				printf("TH ");
-				printf("\033[0m");
-				break;
-			case WARRIOR:
-				printf("\033[0;31m");
-				printf("WA ");
-				printf("\033[0m");
-				break;
-			case PADWAR:
-				printf("\033[0;31m");
-				printf("PW ");
-				printf("\033[0m");
-				break;
-			case DWAR:
-				printf("\033[0;31m");
-				printf("DW ");
-				printf("\033[0m");
-				break;
-			case FLIER:
-				printf("\033[0;31m");
-				printf("FL ");
-				printf("\033[0m");
-				break;
-			case PRINCESS:
-				printf("\033[0;31m");
-				printf("PR ");
-				printf("\033[0m");
-				break;
-			case CHIEF:
-				printf("\033[0;31m");
-				printf("CH ");
-				printf("\033[0m");
-				break;
-			default:
-				noPiece = true;
-				break;
-			}
-			if (noPiece) {
-				noPiece = false;
-				switch (pieceAt(board->black, x, y)) {
-				case PANTHAN:
-					printf("PA ");
-					break;
-				case THOAT:
-					printf("TH ");
-					break;
-				case WARRIOR:
-					printf("WA ");
-					break;
-				case PADWAR:
-					printf("PW ");
-					break;
-				case DWAR:
-					printf("DW ");
-					break;
-				case FLIER:
-					printf("FL ");
-					break;
-				case PRINCESS:
-					printf("PR ");
-					break;
-				case CHIEF:
-					printf("CH ");
-					break;
-				default:
-					noPiece = true;
-				}
-				if (noPiece) {
-					if ((x + y) % 2) {
-						printf(".. ");
-					} else {
-						printf("   ");
-					}
-				}
-			}
-		}
-		printf("\n");
-	}
-	printf("=============================\n");
 }
 
 void copyBoard(Board* dst, Board* src) {
