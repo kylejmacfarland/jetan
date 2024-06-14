@@ -9,7 +9,7 @@
 
 const int FPS = 10;
 
-Board* current;
+Board current;
 
 void playGame(Board* board) {
 	while (true) {
@@ -30,7 +30,7 @@ void handleWindow() {
 	int startTicks, ticksElapsed;
 	while (true) {
 		startTicks = SDL_GetTicks();
-		renderBoard(current);
+		renderBoard(&current);
 		if (isQuitRequested()) {
 			return;
 		}
@@ -46,12 +46,10 @@ int main() {
 		return 1;
 	}
 	setRandomSeed(time(NULL));
-	current = malloc(sizeof(Board));
-	setupBoard(current);
+	setupBoard(&current);
 	pthread_t logicThread;
-	pthread_create(&logicThread, NULL, playGame, current);
+	pthread_create(&logicThread, NULL, playGame, &current);
 	handleWindow();
-	free(current);
 	destroyVisual();
 	return 0;
 }
