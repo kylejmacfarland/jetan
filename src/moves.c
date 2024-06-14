@@ -29,7 +29,7 @@ bool isSpaceThreatened(Board* board, bool checkOrangeThreat, int spaceX, int spa
 				addDiagonalMoves(&moves, sideA, sideB, x, y, 2);
 				break;
 			case DWAR:
-				addDiagonalMoves(&moves, sideA, sideB, x, y, 3);
+				addOrthagonalMoves(&moves, sideA, sideB, x, y, 3);
 				break;
 			case FLIER:
 				addFlierMoves(&moves, sideA, x, y);
@@ -126,48 +126,6 @@ void addThoatMoves(Array* moves, char* toMove, int x, int y) {
 			m->endY = y + offset[i * 2 + 1];
 			addElement(moves, m);
 		}
-	}
-}
-
-void addWarriorMoves(Array* moves, char* toMove, char* opponent, int x, int y) {
-	int offset[] = {
-		 1,  0, 
-		-1,  0, 
-		 0,  1, 
-		 0, -1, 
-		 1,  1, 
-		 1, -1, 
-		-1,  1, 
-		-1, -1, 
-	};
-	int xOffset = 0;
-	int yOffset = 0;
-	for (int i = 0; i < 8; i++) {
-		xOffset = offset[i * 2];
-		yOffset = offset[i * 2 + 1];
-		if (pieceAt(toMove, x + xOffset, y + yOffset) != EMPTY) {
-			continue;
-		}
-		Move* m = malloc(sizeof(Move));
-		m->startX = x;
-		m->startY = y;
-		m->endX = x + offset[i * 2];
-		m->endY = y + offset[i * 2 + 1];
-		addElement(moves, m);
-		if (pieceAt(opponent, xOffset, y + yOffset) != EMPTY) {
-			continue;
-		}
-		xOffset += offset[i * 2];
-		yOffset += offset[i * 2 + 1];
-		if (pieceAt(toMove, x + xOffset, y + yOffset) != EMPTY) {
-			continue;
-		}
-		m = malloc(sizeof(Move));
-		m->startX = x;
-		m->startY = y;
-		m->endX = x + offset[i * 2];
-		m->endY = y + offset[i * 2 + 1];
-		addElement(moves, m);
 	}
 }
 
