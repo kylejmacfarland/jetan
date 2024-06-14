@@ -8,6 +8,10 @@
 
 bool loss = false;
 
+int pieceValue[8] = {
+	1, 2, 2, 2, 3, 3, 10, 10
+};
+
 bool checkLoss(Board* board) {
 	return loss;
 }
@@ -16,10 +20,59 @@ int evaluate(Board* board) {
 	int score = 0;
 	for (int y = 0; y < 10; y++) {
 		for (int x = 0; x < 10; x++) {
-			if (pieceAt(board->orange, x, y)) {
-				score -= 1;
-			} else if (pieceAt(board->black, x, y)) {
-				score += 1;
+			switch (pieceAt(board->orange, x, y)) {
+			case PANTHAN:
+				score -= pieceValue[0];
+				break;
+			case THOAT:
+				score -= pieceValue[1];
+				break;
+			case WARRIOR:
+				score -= pieceValue[2];
+				break;
+			case PADWAR:
+				score -= pieceValue[3];
+				break;
+			case DWAR:
+				score -= pieceValue[4];
+				break;
+			case FLIER:
+				score -= pieceValue[5];
+				break;
+			case PRINCESS:
+				score -= pieceValue[7];
+				break;
+			case CHIEF:
+				score -= pieceValue[8];
+				break;
+			default:
+				switch (pieceAt(board->black, x, y)) {
+				case PANTHAN:
+					score += pieceValue[0];
+					break;
+				case THOAT:
+					score += pieceValue[1];
+					break;
+				case WARRIOR:
+					score += pieceValue[2];
+					break;
+				case PADWAR:
+					score += pieceValue[3];
+					break;
+				case DWAR:
+					score += pieceValue[4];
+					break;
+				case FLIER:
+					score += pieceValue[5];
+					break;
+				case PRINCESS:
+					score += pieceValue[7];
+					break;
+				case CHIEF:
+					score += pieceValue[8];
+					break;
+				}
+				break;
 			}
 		}
 	}
