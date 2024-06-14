@@ -4,11 +4,9 @@
 
 Jetan, or Martian chess, is a fictional chess variant created by Edgar Rice Burroughs for his novel The Chessmen of Mars.
 
-### Rules Interpretations
+## About This Program
 
-The rules as described in the novel and its appendix can be vague and contradictory.
-
-The rules of Jetan described by Burroughs have been interpreted and, in some cases, modified for the sake of playability and ease of understanding for this program. This implementation could very well be described as a variation of the original game.
+The version of Jetan playable in this program can be viewed as a variation of the Burroughs's original game described in the novel. Changes and modifications to the original rules have been made for the sake of playability.
 
 ## Rules
 
@@ -20,22 +18,36 @@ A player wins by either placing the enemy Princess in checkmate or capturing the
 
 #### Panthan
 
-Panthans are similar to pawns in chess. They can move one space in any direction **except** the space directly behind orthagonally.
+Panthans are similar to pawns in chess. They can move and can capture one space in any direction **except** the space directly behind orthagonally.
 
 #### Thoat
 
-Thoat moves as a knight in chess, either two spaces vertically and one space horizontally or two spaces horizontally and one space vertically. They can jump over pieces.
+The Thoat moves as a knight in chess, either two spaces vertically and one space horizontally or two spaces horizontally and one space vertically. It can jump over pieces.
 
 #### Warrior
 
+The Warrior can move up to two spaces in a single orthagonal or diagonal direction. It cannot jump over pieces.
+
 #### Padwar
+
+The Padwar can move up to two spaces in any single diagonal direction. It cannot jump over pieces.
 
 #### Dwar
 
+The Dwar can move up to three spaces in any single orthagonal direction. It cannot jump over pieces.
+
+#### Flier
+
+The Flier can move up to three spaces in any single diagonal direction. It can jump over pieces.
+
 #### Chief
+
+The Chief can move up to three spaces in any single orthagonal direction. It cannot jump over pieces.
 
 #### Princess
 
+The Princess can move up to three spaces in any single orthagonal direction. It can jump over pieces. The Princess cannot capture pieces. The Princess may move up to ten spaces in any single orthagonal direction once per game as an escape move.
+
 ## About the AI
 
-This program is written in C and utilizes various methods used by chess AI programs.
+This program is written in C and utilizes various methods used by chess AI programs. The AI is very much a work in progress with many improvements planned for the future.
